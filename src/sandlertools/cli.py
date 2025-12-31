@@ -1,0 +1,105 @@
+import argparse as ap
+import shutil
+import logging
+import os
+import sys
+
+from sandlerprops.cli import cli as props_cli
+from sandlersteam.cli import cli as steam_cli
+from sandlercubics.cli import cli as cubics_cli
+from sandlercorrespondingstates.cli import cli as cs_cli
+
+banner = """ 
+ __             __        ___  __  ___  __   __        __  
+/__`  /\  |\ | |  \ |    |__  |__)  |  /  \ /  \ |    /__` 
+.__/ /~~\ | \| |__/ |___ |___ |  \  |  \__/ \__/ |___ .__/ 
+            (c) 2025, Cameron F. Abrams <cfa22@drexel.edu>
+"""
+
+logger = logging.getLogger(__name__)
+def setup_logging(args):    
+    loglevel_numeric = getattr(logging, args.logging_level.upper())
+    if args.log:
+        if os.path.exists(args.log):
+            shutil.copyfile(args.log, args.log+'.bak')
+        logging.basicConfig(filename=args.log,
+                            filemode='w',
+                            format='%(asctime)s %(name)s %(message)s',
+                            level=loglevel_numeric
+        )
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(levelname)s> %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+def cli():
+    subcommands = {
+        'props': dict(
+            func = props_cli,
+            help = 'query and manipulate thermophysical property data'
+        ),
+        'cubic': dict(
+            func = cubics_cli,
+            help = 'query and manipulate cubic equation of state calculations'
+        ),
+        'steam': dict(
+            func = steam_cli,
+            help = 'work with steam tables and properties of water/steam'
+        ),
+        'cs': dict(
+            func = cs_cli,
+            help = 'work with corresponding states calculations'
+        ),
+    }
+    parser = ap.ArgumentParser(
+        description="Sandler Tools: A collection of computational tools based on Chemical, Biochemical, and Engineering Thermodynamics (5th edition) by Stan Sandler",
+        epilog="(c) 2025, Cameron F. Abrams <cfa22@drexel.edu>")
+    parser.add_argument(
+        '-b',
+        '--banner',
+        default=False,
+        action=ap.BooleanOptionalAction,
+        help='toggle banner message'
+    )
+    parser.add_argument(
+        '--logging-level',
+        type=str,
+        default='debug',
+        choices=[None, 'info', 'debug', 'warning'],
+        help='Logging level for messages written to diagnostic log'
+    )
+    parser.add_argument(
+        '-l',
+        '--log',
+        type=str,
+        default='',
+        help='File to which diagnostic log messages are written'
+    )
+    subparsers = parser.add_subparsers(
+        title="subcommands",
+        dest="command",
+        metavar="<command>",
+        required=True,
+    )
+    command_parsers={}
+    for k, specs in subcommands.items():
+        command_parsers[k] = subparsers.add_parser(
+            k,
+            help=specs['help'],
+            formatter_class=ap.RawDescriptionHelpFormatter,
+            add_help=False
+        )
+        command_parsers[k].set_defaults(func=specs['func'])
+    args, remaining = parser.parse_known_args()
+    sys.argv = [f'sandlertools-{args.command}'] + remaining
+    setup_logging(args)
+    if args.banner:
+        print(banner)
+    if hasattr(args, 'func'):
+        args.func()
+    else:
+        my_list = ', '.join(list(subcommands.keys()))
+        print(f'No subcommand found. Expected one of {my_list}')
+    if args.banner:
+        print('Thanks for using sandlertools!')
