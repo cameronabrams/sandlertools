@@ -320,6 +320,8 @@ The `GasConstant` class is from the `sandlermisc.gas_constant` module. The `Delt
 
 ## Release History
 
+* 0.3.0
+    * `SteamRequest` implemented
 * 0.2.0
     * updated readme
 * 0.1.0
