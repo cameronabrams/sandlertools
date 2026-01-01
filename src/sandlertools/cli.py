@@ -8,6 +8,7 @@ from sandlerprops.cli import cli as props_cli
 from sandlersteam.cli import cli as steam_cli
 from sandlercubics.cli import cli as cubics_cli
 from sandlercorrespondingstates.cli import cli as cs_cli
+from sandlerchemeq.cli import cli as chemeq_cli
 
 banner = """ 
  __             __        ___  __  ___  __   __        __  
@@ -50,6 +51,10 @@ def cli():
         'cs': dict(
             func = cs_cli,
             help = 'work with corresponding states calculations'
+        ),
+        'chemeq': dict(
+            func = chemeq_cli,
+            help = 'work with chemical equilibrium calculations'
         ),
     }
     parser = ap.ArgumentParser(

@@ -23,6 +23,7 @@ dependencies = [
     "sandlersteam",
     "sandlerprops",
     "sandlermisc",
+    "sandlerchemeq"
 ]
 
 [tool.pytest.ini_options]

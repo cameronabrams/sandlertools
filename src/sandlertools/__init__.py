@@ -9,7 +9,7 @@ https://www.pearson.com/us/higher-education/program/Sandler-Chemical-Biochemical
 Copyright (c) 2025 Cameron F Abrams
 """
 
-from sandlerprops.properties import PropertiesDatabase
+from sandlerprops.properties import Compound, PropertiesDatabase, get_database
 from sandlersteam.state import State as SandlerSteamState
 from sandlersteam.state import SteamTables
 from sandlersteam.request import Request as SteamRequest
@@ -17,8 +17,13 @@ from sandlercubics.eos import IdealGasEOS, GeneralizedVDWEOS, PengRobinsonEOS
 from sandlercorrespondingstates.charts import CorrespondingStatesChartReader
 from sandlermisc.gas_constant import GasConstant
 from sandlermisc.thermals import DeltaH_IG, DeltaS_IG
+from sandlerchemeq.component import Component
+from sandlerchemeq.reaction import Reaction
+from sandlerchemeq.chemeqsystem import ChemEqSystem
 
-__all__ = [ 'PropertiesDatabase', 
+__all__ = [ 'Compound',
+            'PropertiesDatabase',
+            'get_database',
             'SandlerSteamState', 
             'SteamTables', 
             'SteamRequest',
@@ -28,4 +33,7 @@ __all__ = [ 'PropertiesDatabase',
             'CorrespondingStatesChartReader', 
             'GasConstant', 
             'DeltaH_IG', 
-            'DeltaS_IG' ]
+            'DeltaS_IG',
+            'Component',
+            'Reaction',
+            'ChemEqSystem' ]

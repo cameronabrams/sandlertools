@@ -18,6 +18,7 @@ This will install the following packages and wire their CLI's into `sandlertools
 * `sandlersteam` -- steam tables
 * `sandlercubics` -- real-gas cubic equations of state
 * `sandlercorrespondingstates` -- corresponding-states chart reads
+* `sandlerchemeq` -- chemical equilibrium calculations
 * `sandlermisc` -- miscellaneous utilities
 
 ## Usage
@@ -34,6 +35,7 @@ Currently available tools are
 - `cubic`: Cubic equations of state
 - `steam`: Steam-tables
 - `cs`: Corresponding states
+- `chemeq`: Chemical equilibrium calculations
 
 ```sh
 $ sandlertools --help
@@ -226,16 +228,27 @@ CpC = 1.197e-05 J/mol-K^3
 CpD = -1.132e-08 J/mol-K^4
 ```
 
+#### `sandlertools chemeq`
+
+Below is an example of solving a chemical equilibrium problem using `sandlertools chemeq`:
+
+```sh
+$ sandlertools chemeq solve --components hydrogen nitrogen ammonia -T 600 -P 100 -n0 3. 1. 0.
+N_{H2}=1.2110 y_{H2}=0.4314
+N_{N2}=0.4037 y_{N2}=0.1438
+N_{NH3}=1.1926 y_{NH3}=0.4248
+```
+
 ### API
 
 `sandlertools` exposes several classes, objects, and functions from its component packages:
 
 #### `PropertiesDatabase`
 
-`PropertiesDatabase` is the pure-component properties database class from the `sandlerprops.properties` module.
+`PropertiesDatabase` is the pure-component properties database class from the `sandlerprops.properties` module.  Instantiating `PropertiesDatabase` generates a database object within the local scope.
 
 ```python
->>> from sandlertools import PropertiesDatabase # equivalent to from sandlerprops.properties import PropertiesDatabase
+>>> from sandlertools import PropertiesDatabase
 >>> P = PropertiesDatabase()
 >>> m = P.get_compound('methane')
 >>> m.Molwt
@@ -258,6 +271,23 @@ methylal
 methyl amine
 ethylbenzene
 nitromethane
+```
+
+`sandlertools` also exposes the convenience function `get_database` that provides
+the lazy with quick access to a global, singleton properties database.
+
+```python
+>>> from sandlertools import get_database
+>>> d = get_database() # access to a global database rather than a local instance like in the example above
+>>> m = d.get_compound('methane')
+>>> m.Molwt
+16.043
+>>> d.U.Molwt
+'g/mol'
+>>> m.Tc
+190.4
+>>> d.U.Tc
+'K'
 ```
 
 #### `SandlerSteamState`
@@ -313,13 +343,32 @@ Hdep = -438.15 J/mol = -0.55 cal/mol-K
 Sdep = -1.13 J/mol-K = -0.27 cal/mol-K
 ```
 
+#### `Component`, `Reaction`, and `ChemEqSystem`
+
+`sandlertools` API exposes the `Component`, `Reaction`, and `ChemEqSystem` of the `sandlerchemeq` package.
+
+```python
+>>> from sandlertools import get_database, Component, Reaction, ChemEqSystem
+>>> d = get_database()
+>>> hydrogen = Component.from_compound(d.get_compound('hydrogen (equilib)'), T=298.15, P=1.0)               
+>>> nitrogen = Component.from_compound(d.get_compound('nitrogen'), T=298.15, P=1.0)
+>>> system = ChemEqSystem(Components=[ammonia, nitrogen, hydrogen], N0=np.array([0.0, 1.0, 3.0]),
+                              T=500.0, P=100.0)
+>>> system.solve_lagrange()
+>>> print(system.report())
+N_{NH3}=1.6828 y_{NH3}=0.7262
+N_{N2}=0.1586 y_{N2}=0.0684
+N_{H2}=0.4757 y_{H2}=0.2053
+```
+
 #### Miscellaneous
 
 The `GasConstant` class is from the `sandlermisc.gas_constant` module. The `DeltaH_IG` and `DeltaS_IG` functions are from the `sandlermisc.thermals` module.
 
 
 ## Release History
-
+* 0.4.0
+    * `sandlerchemeq` integration
 * 0.3.0
     * `SteamRequest` implemented
 * 0.2.0
