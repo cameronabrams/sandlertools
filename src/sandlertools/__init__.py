@@ -21,6 +21,17 @@ from sandlerchemeq.component import Component
 from sandlerchemeq.reaction import Reaction
 from sandlerchemeq.chemeqsystem import ChemEqSystem
 
+from importlib.metadata import version
+
+versions = {
+    'sandlerprops': version('sandlerprops'),
+    'sandlersteam': version('sandlersteam'),
+    'sandlercubics': version('sandlercubics'),
+    'sandlercorrespondingstates': version('sandlercorrespondingstates'),
+    'sandlermisc': version('sandlermisc'),
+    'sandlerchemeq': version('sandlerchemeq'),
+}
+
 __all__ = [ 'Compound',
             'PropertiesDatabase',
             'get_database',

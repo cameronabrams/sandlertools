@@ -10,13 +10,17 @@ from sandlercubics.cli import cli as cubics_cli
 from sandlercorrespondingstates.cli import cli as cs_cli
 from sandlerchemeq.cli import cli as chemeq_cli
 
+from . import versions
+
 banner = """ 
  __             __        ___  __  ___  __   __        __  
 /__`  /\  |\ | |  \ |    |__  |__)  |  /  \ /  \ |    /__` 
 .__/ /~~\ | \| |__/ |___ |___ |  \  |  \__/ \__/ |___ .__/ 
             (c) 2025, Cameron F. Abrams <cfa22@drexel.edu>
 """
-
+for tool in ['sandlerprops', 'sandlersteam', 'sandlercubics', 'sandlercorrespondingstates', 'sandlermisc', 'sandlerchemeq']:
+    banner += f'\n  {tool} version: {versions[tool]}'
+    
 logger = logging.getLogger(__name__)
 def setup_logging(args):    
     loglevel_numeric = getattr(logging, args.logging_level.upper())
