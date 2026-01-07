@@ -1,0 +1,40 @@
+# .github/workflows/bump-version.yaml
+name: Bump Version on Dependency Update
+on:
+  repository_dispatch:
+    types: [dependency_updated]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Update dependency version
+        run: |
+          PACKAGE=${{ github.event.client_payload.package }}
+          VERSION=${{ github.event.client_payload.version }}
+          
+          # Update pyproject.toml (adjust path/pattern as needed)
+          sed -i "s/${PACKAGE}>=.*/${PACKAGE}>=${VERSION}\",/" pyproject.toml
+      
+      - name: Bump metapackage version
+        run: |
+          pip install bump2version
+          bump2version patch  # or minor/major depending on your policy
+      
+      - name: Get new version
+        id: get_version
+        run: |
+          VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Commit, tag, and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: bump ${{ github.event.client_payload.package }} to ${{ github.event.client_payload.version }}"
+          git tag "v${{ steps.get_version.outputs.version }}"
+          git push
+          git push --tags

@@ -367,6 +367,8 @@ The `GasConstant` class is from the `sandlermisc.gas_constant` module. The `Delt
 
 
 ## Release History
+* 0.5.1
+    * changed default banner behavior
 * 0.5.0
     * reports versions of all tools in banner message
 * 0.4.0
