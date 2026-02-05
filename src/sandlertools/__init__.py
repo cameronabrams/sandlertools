@@ -14,9 +14,8 @@ from sandlersteam import State as SandlerSteamState
 from sandlersteam import get_tables
 from sandlercubics import IdealGasEOS, VanDerWaalsEOS, SoaveRedlichKwongEOS, PengRobinsonEOS
 from sandlercorrespondingstates import CorrespondingStatesChartReader
-from sandlermisc import GasConstant, DeltaH_IG, DeltaS_IG
+from sandlermisc import R, DeltaH_IG, DeltaS_IG, ureg
 from sandlerchemeq import Component, Reaction, ChemEqSystem
-
 from importlib.metadata import version
 
 SteamTables = get_tables()
@@ -43,7 +42,8 @@ __all__ = [ 'Compound',
             'SoaveRedlichKwongEOS', 
             'PengRobinsonEOS', 
             'CorrespondingStatesChartReader', 
-            'GasConstant', 
+            'R',
+            'ureg', 
             'DeltaH_IG', 
             'DeltaS_IG',
             'Component',
