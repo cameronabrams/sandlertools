@@ -13,7 +13,7 @@ from sandlerprops import Compound, PropertiesDatabase, get_database
 from sandlersteam import State as SandlerSteamState
 from sandlersteam import get_tables
 from sandlercubics import IdealGasEOS, VanDerWaalsEOS, SoaveRedlichKwongEOS, PengRobinsonEOS
-from sandlercorrespondingstates import CorrespondingStatesChartReader
+from sandlercorrespondingstates import CSState
 from sandlermisc import R, DeltaH_IG, DeltaS_IG, ureg
 from sandlerchemeq import Component, Reaction, ChemEqSystem
 from importlib.metadata import version
@@ -41,7 +41,7 @@ __all__ = [ 'Compound',
             'VanDerWaalsEOS', 
             'SoaveRedlichKwongEOS', 
             'PengRobinsonEOS', 
-            'CorrespondingStatesChartReader', 
+            'CSState',
             'R',
             'ureg', 
             'DeltaH_IG', 
