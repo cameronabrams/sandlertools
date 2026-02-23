@@ -18,9 +18,42 @@ from sandlermisc import R, DeltaH_IG, DeltaS_IG, ureg
 from sandlerchemeq import Component, Reaction, ChemEqSystem
 from importlib.metadata import version
 
-SteamTables = get_tables()
-Properties = get_database()
+def __getattr__(name):
+    """Lazy-load expensive singleton objects on first access.
 
+    ``SteamTables`` and ``Properties`` each require significant time and memory
+    to initialise (parsing large data files), so they are not created at import
+    time.  Instead, Python's module-level ``__getattr__`` hook defers
+    construction until the first attribute access.  The object is then stored as
+    a module-level global so that subsequent accesses return the cached instance
+    without re-parsing.
+
+    Parameters
+    ----------
+    name : str
+        Attribute name being looked up on the module.
+
+    Returns
+    -------
+    object
+        The requested singleton object.
+
+    Raises
+    ------
+    AttributeError
+        If *name* is not a recognised lazy attribute.
+    """
+    global SteamTables, Properties
+    if name == 'SteamTables':
+        SteamTables = get_tables()
+        return SteamTables
+    if name == 'Properties':
+        Properties = get_database()
+        return Properties
+    raise AttributeError(f"module 'sandlertools' has no attribute {name!r}")
+
+# Installed versions of each dependency, queried at import time.
+# Consumed by cli.py to display the version banner.
 versions = {
     'sandlerprops': version('sandlerprops'),
     'sandlersteam': version('sandlersteam'),
